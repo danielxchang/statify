@@ -1,0 +1,12 @@
+,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,
+Play-Type,Quarter,Minute,Seconds,Shooter,Shot Type,Made Shot?,Assist?,Assister,Shooting Foul?,Fouler,Rebounder,Block?,Blocker,Turnover Committer,Steal?,Stealer,Non-Shooting Fouler,Subbing In,Subbing Out,Timeout?,Timeout Team,Quarter End
+shooting,1,11,30,Lebron James (#23) - Lakers,2-Pointer,FALSE,,,FALSE,,Russell Westbrook (#0) - Lakers,FALSE,,,,,,,,,,
+turnover,1,11,20,,,,,,,,,,,Russell Westbrook (#0) - Lakers,TRUE,Kawhi Leonard (#2) - Clippers,,,,,,
+non-shooting foul,1,11,0,,,,,,,,,,,,,,Russell Westbrook (#0) - Lakers,,,,,
+substitution,1,11,0,,,,,,,,,,,,,,,Russell Westbrook (#0) - Lakers,Austin Reeves (#15) - Lakers,,,
+shooting,1,10,55,Paul George (#13) - Clippers,3-Pointer,TRUE,TRUE,Reggie Jackson (#1) - Clippers,FALSE,,,,,,,,,,,,,
+stoppage,1,10,53,,,,,,,,,,,,,,,,,TRUE,Lakers,
+shooting,1,10,45,Anthony Davis (#3) - Lakers,2-Pointer,TRUE,TRUE,Lebron James (#23) - Lakers,TRUE,Nicolas Batum (#33) - Clippers,,,,,,,,,,,,
+shooting,1,10,30,Paul George (#13) - Clippers,2-Pointer,FALSE,,,FALSE,,Austin Reeves (#15) - Lakers,TRUE,Anthony Davis (#3) - Lakers,,,,,,,,,
+stoppage,1,,,,,,,,,,,,,,,,,,,FALSE,,TRUE

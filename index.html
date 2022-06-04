@@ -97,6 +97,19 @@
   </head>
   <body class="bg-light">
     <div id="menu-container"></div>
+    <form
+      method="POST"
+      action="http://127.0.0.1:5000/play-by-play/basketball"
+      enctype="multipart/form-data"
+    >
+      <label>Upload Roster CSV</label>
+
+      <p><input type="file" name="roster-file" accept=".csv" /></p>
+      <label>Upload Play-by-Play CSV</label>
+      <p><input type="file" name="pbp-file" accept=".csv" /></p>
+
+      <p><input type="submit" value="Submit" /></p>
+    </form>
     <div class="container" id="products-container">
       <!-- Loading indicator: this gets replaced when we have products -->
       <div class="text-center p-5 m-5">
