@@ -1,10 +1,11 @@
 from data_extractor import DataExtractor
 
 class PlayByPlay:
-    def __init__(self):
+    def __init__(self, sport = "basketball"):
         self.extractor = DataExtractor()
         self.plays = None
         self.players = None
+        self.sport = sport
 
     def retrieve_data(self, roster_csv, pbp_csv):
         self.plays = self.extractor.read_data(pbp_csv)
