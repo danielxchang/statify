@@ -3,32 +3,19 @@ import numpy as np
 from pprint import pprint
 import re
 
-# Models one unit of player/play data
-class DataItem:
-    def __init__(self, keys):
-        self.item = {key: None for key in keys}
-
-    def populate_item(self, record):
-        for key in self.item:
-            self.item[key] = record[key]
-
-    def print_item(self):
-        pprint(self.item)
-
 """
 Models a data extractor that reads data 
-from csv and converts to list of DataItems
+from csv and converts to list of Python dictionaries
 """
 class CsvParser:
     def read_data(self, file_path):
         df = self.clean_dataframe(file_path)
         headers = df.columns
         data = []
-
-        # Converts the csv record data into DataItems
         for i in range(len(df)):
-            item = DataItem(headers)
-            item.populate_item(df.iloc[i])
+            item = {}
+            for header in headers:
+                item[header.lower()] = df.iloc[i][header]
             data.append(item)
         return data
 
