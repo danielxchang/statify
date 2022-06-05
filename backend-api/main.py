@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, Response
 
 from helpers.constants import UPLOAD_FOLDER, BASKETBALL_TEMPLATE_URL
 from dataworkers.data_processor import DataProcessor
-from dataworkers.file_handler import FileHandler
+from fileworkers.file_handler import FileHandler
 
 app = Flask(__name__)
 
@@ -17,9 +17,10 @@ def post_data(sport, extension):
         return Response(status = 400)
     
     data_processor = DataProcessor(sport, 'csv')
-    data = data_processor.retrieve_data(uploaded_paths)
+    data_processor.read_data(uploaded_paths)
     file_handler.finished_reading_files(uploaded_paths.values())
-    print(data)
+    processed_data = data_processor.translate_data()
+    print(processed_data)
     return jsonify(message = 'Success!')
 
 @app.route('/game/<game_id>')
