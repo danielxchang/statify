@@ -19,7 +19,7 @@ class DataItem:
 Models a data extractor that reads data 
 from csv and converts to list of DataItems
 """
-class DataExtractor:
+class CsvParser:
     def read_data(self, file_path):
         df = self.clean_dataframe(file_path)
         headers = df.columns
