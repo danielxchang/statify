@@ -4,82 +4,145 @@ import os
 
 load_dotenv()
 
+# All-Purpose Query Function
+def execute_custom_query(query):
+    return execute_query(query)
+
 # Utility Functions
 def connect_to_db():
     mydb = mysql.connector.connect(
     host=os.environ.get('MYSQL_HOST'),
     user=os.environ.get('MYSQL_USER'),
-    password=os.environ.get('MYSQL_PASSWORD'),
-    database=os.environ.get('MYSQL_DB_DEV')
+    password=os.environ.get('MYSQL_PASSWORD')
+    # database=os.environ.get('MYSQL_DB_DEV')
     )
     return mydb
 
-def print_cursor(cursor):
+def get_last_query():
+    query_data = {
+        "headings": cursor.column_names,
+        "records": cursor.fetchall()
+    }
+    return query_data
+
+def get_table_columns(table_name):
+    execute_custom_query(f"SHOW columns FROM {table_name}")
+    return [column[0] for column in cursor.fetchall()] 
+
+def commit_changes():
+    connected_db.commit()
+
+def close_db():
+    connected_db.close()
+
+def execute_query(query, commit_change = False):
+    try:
+        cursor.execute(query)
+        if commit_change:
+            commit_changes()
+        return True, 'Success!'
+    except mysql.connector.Error as err:
+        return False, err
+
+def print_cursor():
     for x in cursor:
-        print(x, type(x))
+        print(x)
 
 # Database Functions
-def create_database(cursor, database_name):
-    cursor.execute(f"CREATE DATABASE {database_name}")
+def show_databases():
+    result = execute_query("SHOW DATABASES")
+    print_cursor()
+    return result
 
-def show_databases(cursor):
-    cursor.execute("SHOW DATABASES")
-    print_cursor(cursor)
+def create_database(database_name):
+    return execute_query(f"CREATE DATABASE {database_name}")
 
-def drop_database(cursor, database_name):
-    cursor.execute(f"DROP DATABASE {database_name}")
+def use_database(database_name):
+    return execute_query(f"USE {database_name}")
 
-'''
-ALTER DATABASE
-'''
+def drop_database(database_name):
+    return execute_query(f"DROP DATABASE {database_name}")
 
 # Table Functions
-def use_table(cursor, table_name):
-    cursor.execute(f"USE {table_name}")
+def show_tables():
+    result = execute_query("SHOW TABLES")
+    print_cursor()
+    return result
 
-def show_tables(cursor):
-    cursor.execute("SHOW TABLES")
-    print_cursor(cursor)
-
-def create_table(cursor, table_name, columns_config):
+def create_table(table_name, columns_config):
     columns = [f"{name} {columns_config[name]}" for name in columns_config]
     query = f"CREATE TABLE {table_name} ({', '.join(columns)})"
-    cursor.execute(query)
+    return execute_query(query)
 
-def drop_table(cursor, table_name):
-    cursor.execute(f"DROP TABLE {table_name}")
-
-'''
-ALTER TABLE
-'''
+def drop_table(table_name):
+    return execute_query(f"DROP TABLE {table_name}")
 
 # Data Query Functions
-def select(cursor, table_name, columns = ['*'], options = None): 
-    query = f'''
-        SELECT {", ".join(columns)} 
-        FROM {table_name}
-    '''
-    cursor.execute(query)
+def select_query(clause_arguments): 
+    query_statements = []
+    for clause in ["SELECT", "FROM", 'JOIN', "WHERE", "GROUP BY", "HAVING", "ORDER BY", "LIMIT"]:
+        if clause in clause_arguments:
+            query_statements.append(select_handler(clause, clause_arguments[clause]))
+    
+    query = '\n'.join(query_statements)
+    return execute_query(query)
 
-def insert_into():
-    pass
+def insert_into_query(table_name, columns, values_list):
+    columns_string = ', '.join(columns)
+    values_string = '), \n('.join([', '.join(values) for values in values_list])
+    query = f"INSERT INTO {table_name} ({columns_string}) \nVALUES \n({values_string})"
+    return execute_query(query, True)
 
-def update():
-    pass
+def update_query(table_name, set_assignments, where_condition):
+    assignments_string = ',\n'.join(set_assignments)
+    query = f"UPDATE {table_name} \nSET \n{assignments_string} \nWHERE {where_condition}"
+    return execute_query(query, True)
 
-def delete():
-    pass
+def delete_query(table_name, where_condition):
+    query = f"DELETE FROM {table_name} \nWHERE {where_condition}"
+    return execute_query(query, True)
 
+def select_handler(clause, specifications):
+    if clause == 'SELECT':
+        return select(specifications)
+    if clause == 'FROM':
+        return from_clause(specifications)
+    if clause == 'JOIN':
+        return join(specifications)
+    if clause == 'WHERE':
+        return where(specifications)
+    if clause == 'ORDER BY':
+        return order_by(specifications)
+    if clause == 'GROUP BY':
+        return group_by(specifications)
+    if clause == 'HAVING':
+        return having(specifications)
+    if clause == 'LIMIT':
+        return limit(specifications)
+
+def select(columns):
+    return f"SELECT {', '.join(columns)}"
+
+def from_clause(table_name):
+    return f"FROM {table_name}"
+
+def join(arguments):
+    return f"{arguments['type']} JOIN {arguments['join_table']} ON {arguments['join_condition']}"
+
+def where(search_condition):
+    return f"WHERE {search_condition} "
+
+def order_by(expressions):
+    return f"ORDER BY {', '.join(expressions)}"
+
+def group_by(expressions):
+    return f"GROUP BY {', '.join(expressions)}"
+
+def having(group_condition):
+    return f"HAVING {group_condition}"
+
+def limit(arguments):
+    return f"LIMIT {arguments['offset'] if 'offset' in arguments else 0}, {arguments['count']}" 
 
 connected_db = connect_to_db()
-mycursor = connected_db.cursor()
-
-table_name = "customers"
-columns_config = {
-    "id": "INT AUTO_INCREMENT PRIMARY KEY",
-    "name": "VARCHAR(255)",
-    "address": "VARCHAR(255)"
-}
-select(mycursor, 'customers')
-print_cursor(mycursor)
-
+cursor = connected_db.cursor()
