@@ -40,9 +40,9 @@ def execute_query(query, commit_change = False):
         cursor.execute(query)
         if commit_change:
             commit_changes()
-        return True, 'Success!'
+        return True, {"message": 'Success!', "query": query}
     except mysql.connector.Error as err:
-        return False, err
+        return False, {"message": err, "query": query}
 
 def print_cursor():
     for x in cursor:
@@ -126,8 +126,9 @@ def select(columns):
 def from_clause(table_name):
     return f"FROM {table_name}"
 
-def join(arguments):
-    return f"{arguments['type']} JOIN {arguments['join_table']} ON {arguments['join_condition']}"
+def join(join_statements):
+    joins = [f"{j_type} JOIN {table} ON {condition}" for j_type, table, condition in join_statements]
+    return '\n'.join(joins)
 
 def where(search_condition):
     return f"WHERE {search_condition} "

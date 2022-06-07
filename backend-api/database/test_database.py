@@ -1,6 +1,6 @@
 from database import *
 from pprint import pprint
-from testing_data import *
+from test_data import *
 
 # Database Functions Tests
 def test_show_db():
@@ -59,19 +59,32 @@ def run_tests(test_group, custom_sequence = None):
     passed_tests = 0
     for i, test in enumerate(test_sequence):
         print(f"----------------------------------TEST {i + 1}----------------------------------")
-        if not test_db_function(test):
+        test_result = test_db_function(test)
+        pprint(test_result)
+        if not test_result['success']:
             return 
         passed_tests += 1
     print(f"----------------------------------------------------------------------------")
     print(f"Passed {passed_tests} of {len(test_sequence)} tests!")
 
 def test_db_function(test_type):
-    passed, response = tests[test_type]() if test_type in tests else execute_custom_query(test_type)
-    print(f"QUERY: {test_type}")
-    pprint(response)
-    if test_type not in tests:
-        print_cursor()
-    return passed
+    defined_test = test_type in tests
+    is_print_function = test_type in ['print query', 'print columns']
+
+    passed, response = tests[test_type]() if defined_test else execute_custom_query(test_type)
+    print_data = None
+    if is_print_function:
+        print_data = response
+    elif not defined_test:
+        print_data = get_query_result()[1]
+    result_data = {
+        'test type': test_type if defined_test else 'Custom Query',
+        'success': passed,
+        'message': response['message'] if not is_print_function else 'Printing Data',
+        'query': response['query'] if not is_print_function else 'Print Query', 
+        'print data': print_data
+    }
+    return result_data
 
 # Test keyword to test function map
 tests = {
@@ -97,9 +110,13 @@ run_tests('CUSTOM', ['drop db']) # DROP TEST DATABASE
 run_tests('CUSTOM', ['create table', 'show tables']) # CREATE TEST TABLE
 run_tests('CUSTOM', ['drop table']) # DROP TEST TABLE
 
-Uncomment and run any of the lines below to test function groups individually
+Set Data Input variables for parent or child table by passing 'parent' or 'child' as a parameter
+Uncomment and run any of the run_tests below to test function groups individually
 Uncomment all and run to run all tests at once
 '''
+table_type = 'parent'
+# table_type = 'child'
+table_name, columns_config, select_arguments, insert_columns, insert_values_list, update_set_assignments, update_where_condition, delete_where_condition, test_data_query_sequence = set_data_input_variables(table_type)
 
 run_tests('DB')
 run_tests('TABLE')
