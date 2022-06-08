@@ -14,7 +14,6 @@ def connect_to_db():
     host=os.environ.get('MYSQL_HOST'),
     user=os.environ.get('MYSQL_USER'),
     password=os.environ.get('MYSQL_PASSWORD')
-    # database=os.environ.get('MYSQL_DB_DEV')
     )
     return mydb
 
@@ -28,6 +27,14 @@ def get_last_query():
 def get_table_columns(table_name):
     execute_custom_query(f"SHOW columns FROM {table_name}")
     return [column[0] for column in cursor.fetchall()] 
+
+def get_table_description(table_name):
+    execute_custom_query(f'DESC {table_name}')
+    return get_last_query()
+
+def get_last_insert_id():
+    execute_custom_query("SELECT LAST_INSERT_ID()")
+    return get_last_query()['records'][0][0]
 
 def commit_changes():
     connected_db.commit()
