@@ -2,17 +2,7 @@ from database import *
 from pprint import pprint
 
 db_name = 'statify'
-table_names = [
-    'sports', 
-    'users',
-    'basketball_gamelogs',
-    'leagues',
-    'teams',
-    'games',
-    'players',
-    'performances'
-]
-columns_configs = {
+table_column_configs_map = {
     'sports': {
         "id": "INT AUTO_INCREMENT PRIMARY KEY",
         "sport_name": "VARCHAR(100) NOT NULL"
@@ -62,7 +52,7 @@ columns_configs = {
     },
     'games': {
         "id": "INT AUTO_INCREMENT PRIMARY KEY",
-        "league_id": "INT NOT NULL",
+        "league_id": "INT",
         "team1_id": "INT NOT NULL",
         "team2_id": "INT NOT NULL",
         "team1_score": "INT DEFAULT 0",
@@ -75,9 +65,14 @@ columns_configs = {
         "id": "INT AUTO_INCREMENT PRIMARY KEY",
         "user_id": "INT NOT NULL",
         "team_id": "INT NOT NULL",
-        "position": "VARCHAR(100) NOT NULL",
         "FOREIGN KEY (user_id)": "REFERENCES users(id) ON DELETE CASCADE",
         "FOREIGN KEY (team_id)": "REFERENCES teams(id) ON DELETE CASCADE"
+    },
+    'positions': {
+        "id": "INT AUTO_INCREMENT PRIMARY KEY",
+        "player_id": "INT NOT NULL",
+        "position": "VARCHAR(100) NOT NULL",
+        "FOREIGN KEY (player_id)": "REFERENCES players(id) ON DELETE CASCADE"
     },
     'performances': {
         "id": "INT AUTO_INCREMENT PRIMARY KEY",
@@ -98,9 +93,9 @@ create_database(db_name)
 use_database(db_name)
 
 # Step 2 - Create Tables 
-for table_name in table_names:
+for table_name in table_column_configs_map:
     pprint(f'CREATING TABLE: {table_name}')
-    create_table(table_name, columns_configs[table_name])
+    create_table(table_name, table_column_configs_map[table_name])
 
 # Step 3 - Check for all table names
 show_tables()
