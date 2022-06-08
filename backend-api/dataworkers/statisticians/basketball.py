@@ -37,7 +37,7 @@ class BasketballStatistician(Statistician):
                 'values_list': team_values
             }
             team_insert_id = self.query_database('INSERT_INTO', team_insert_args)
-            roster_map[team] = {'insert_id': team_insert_id, "players": {}}
+            roster_map[team] = {'insert_id': team_insert_id, "players": {}, "starters": []}
 
         for player in players:
             player_team = player['team']
@@ -70,6 +70,8 @@ class BasketballStatistician(Statistician):
 
             player_id = player['player id']
             roster_map[player_team]['players'][player_id] = player_insert_id
+            if player['starting?']:
+                roster_map[player_team]['starters'].append(player_id)
         pprint(roster_map)
 
     # NEXT
