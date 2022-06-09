@@ -33,7 +33,7 @@ child_columns_config = {
     "jersey_number": "INT",
     "team_id": "INT",
     "position": "VARCHAR(100)",
-    "FOREIGN KEY(team_id)": "REFERENCES teams(id) ON DELETE CASCADE"
+    "FOREIGN KEY": "(team_id) REFERENCES teams(id) ON DELETE CASCADE"
 }
 
 # Select variables
@@ -89,14 +89,12 @@ child_delete_where_condition = 'first_name = "Lavar" AND last_name = "Ball"'
 
 # TEST SEQUENCES
 test_db_sequence = [
+    'drop db',
     'show db', 
     'create db', 
     'show db', 
     'use db', 
-    'SELECT database()', 
-    'drop db',
-    'show db',
-    'create db' 
+    'SELECT database()'
 ]
 
 test_table_sequence = [
