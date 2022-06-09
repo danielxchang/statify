@@ -114,12 +114,11 @@ Set Data Input variables for parent or child table by passing 'parent' or 'child
 Uncomment and run any of the run_tests below to test function groups individually
 Uncomment all and run to run all tests at once
 '''
-table_type = 'parent'
-# table_type = 'child'
+table_type = 'parent' # Uncomment to run parent table tests
+# table_type = 'child' # Uncomment to run child table tests
 table_name, columns_config, select_arguments, insert_columns, insert_values_list, update_set_assignments, update_where_condition, delete_where_condition, test_data_query_sequence = set_data_input_variables(table_type)
 
-run_tests('DB')
+run_tests('DB') # Comment out when running child table tests
 run_tests('TABLE')
 run_tests('QUERY')
-run_tests('CUSTOM', ['drop db']) # RESET DB BY DROP TEST DB
 close_db()

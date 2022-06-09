@@ -12,7 +12,7 @@ class DataProcessor:
 
     def ____instantiate_statistician(self, sport):
         if sport == 'basketball':
-            return BasketballStatistician()
+            return BasketballStatistician(sport)
 
     def read_data(self, uploaded):
         self.__data = {key: self.__file_parser.read_data(file_path) for key, file_path in uploaded.items()}

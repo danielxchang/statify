@@ -68,7 +68,7 @@ def use_database(database_name):
     return execute_query(f"USE {database_name}")
 
 def drop_database(database_name):
-    return execute_query(f"DROP DATABASE {database_name}")
+    return execute_query(f"DROP DATABASE IF EXISTS {database_name}")
 
 # Table Functions
 def show_tables():
