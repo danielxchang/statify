@@ -21,16 +21,18 @@ class DataClerk:
         table_name = query_args['table_name']
         columns = query_args['columns']
         values_list = query_args['values_list']
-        response = insert_into_query(table_name, columns, values_list)
+        insert_into_query(table_name, columns, values_list)
         return get_last_insert_id()
 
     def select(self, query_args):
-        response = select_query(query_args)
+        select_query(query_args)
         return get_last_query()
 
     def update(self, query_args):
-        # TO DO
-        return
+        table_name = query_args['table_name']
+        set_assignments = query_args['set_assignments']
+        where_condition = query_args['where_condition']
+        update_query(table_name, set_assignments, where_condition)
 
     def does_record_exist(self, select_query_args):
         match_records = self.query_database('SELECT', select_query_args)['records']
