@@ -38,8 +38,6 @@ parent_tables_configs = {
         "blocks": "INT DEFAULT 0",
         "turnovers": "INT DEFAULT 0",
         "fouls": "INT DEFAULT 0",
-        "net_positive": 'BOOLEAN DEFAULT TRUE',
-        "plus_minus": "INT DEFAULT 0",
         "points": "INT DEFAULT 0",
     }
 }
@@ -88,19 +86,22 @@ child_tables_configs = {
         "UNIQUE": "(position, sport_id)"
     },
     'player_positions': {
+        "id": "INT AUTO_INCREMENT PRIMARY KEY",
         "player_id": "INT NOT NULL",
         "position_id": "INT NOT NULL",
         "FOREIGN KEY": "(player_id) REFERENCES players(id) ON DELETE CASCADE",
         "FOREIGN KEY": "(position_id) REFERENCES positions(id) ON DELETE CASCADE",
-        "PRIMARY KEY": "(player_id, position_id)"
+        "UNIQUE": "(player_id, position_id)"
     },
     'performances': {
         "game_id": "INT NOT NULL",
         "player_id": "INT NOT NULL",
         "gamelog_id": "INT NOT NULL",
+        "player_position_id": "INT NOT NULL",
         "FOREIGN KEY": "(game_id) REFERENCES games(id) ON DELETE CASCADE",
         "FOREIGN KEY": "(player_id) REFERENCES players(id) ON DELETE CASCADE",
         "FOREIGN KEY": "(gamelog_id) REFERENCES basketball_gamelogs(id) ON DELETE CASCADE",
+        "FOREIGN KEY": "(player_position_id) REFERENCES player_positions(id) ON DELETE CASCADE",
         "PRIMARY KEY": "(game_id, player_id)"
     }
 }

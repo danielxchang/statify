@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, Response
+from pprint import pprint
 
 from helpers.constants import UPLOAD_FOLDER, BASKETBALL_TEMPLATE_URL
 from dataworkers.data_processor import DataProcessor
@@ -20,6 +21,7 @@ def post_data(sport, extension):
     data_processor.read_data(uploaded_paths)
     file_handler.finished_reading_files(uploaded_paths.values())
     processed_data = data_processor.translate_data()
+    pprint(processed_data)
     return jsonify(message = 'Success!')
 
 @app.route('/game/<game_id>')
