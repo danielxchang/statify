@@ -20,7 +20,6 @@ def post_data(sport, extension):
     data_processor.read_data(uploaded_paths)
     file_handler.finished_reading_files(uploaded_paths.values())
     processed_data = data_processor.translate_data()
-    print(processed_data)
     return jsonify(message = 'Success!')
 
 @app.route('/game/<game_id>')

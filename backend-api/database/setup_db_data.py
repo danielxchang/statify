@@ -22,7 +22,9 @@ parent_tables_configs = {
     },
     'basketball_gamelogs': {
         "id": "INT AUTO_INCREMENT PRIMARY KEY",
-        "minutes": "INT DEFAULT 0",
+        "jersey_number": "INT DEFAULT 0",
+        "minutes_played": "INT DEFAULT 0",
+        "seconds_played": "INT DEFAULT 0",
         "two_point_makes": "INT DEFAULT 0",
         "two_point_attempts": "INT DEFAULT 0",
         "three_point_makes": "INT DEFAULT 0",

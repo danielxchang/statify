@@ -15,12 +15,13 @@ class DataProcessor:
             return BasketballStatistician(sport)
 
     def read_data(self, uploaded):
-        self.__data = {key: self.__file_parser.read_data(file_path) for key, file_path in uploaded.items()}
+        data = {key: self.__file_parser.read_data(file_path) for key, file_path in uploaded.items()}
+        self.__statistician.receive_data(data)
 
     def translate_data(self):
-        return self.__statistician.process_data(self.__data)
+        return self.__statistician.process_data()
 
-def read_data(data):
+def read_test_data(data):
     for key, data_list in data.items():
         print(f'{key}: {len(data_list)} Records')
         for item in data_list:
@@ -34,7 +35,7 @@ def apply_test():
     }
     dp = DataProcessor()
     data = dp.retrieve_data(uploaded)
-    read_data(data)
+    read_test_data(data)
 
 if __name__ == "__main__":
     apply_test()
