@@ -56,7 +56,7 @@ class Statistician:
     def process_data(self):
         self.process_rosters(self.data['roster'])
         self.process_play_by_play(self.data['pbp'])
-        return self.finalize_data({'box-score': self.get_box_score(), 'team-stats': self.get_team_stats()})
+        return self.get_stats()
 
     def process_rosters(self, players):
         returning_user_ids = self.process_users(players)
@@ -137,7 +137,19 @@ class Statistician:
                 }
                 team_id = self.data_clerk.insert_into_db('teams', team_entry)
                 self.roster_map[team]['team_id'] = team_id
-    
+
+    def add_play_to_db(self, play_map):
+        play_entry = {
+            "game_id": self.game.get_game_id(),
+            "score": self.get_current_score(),
+            "period": play_map['quarter'],
+            "minute": play_map['minute'],
+            "second": play_map['second'],
+            "team_name": play_map['team'],
+            "play_string": play_map['play_string']
+        }
+        self.data_clerk.insert_into_db('plays', play_entry)
+
     def process_players(self, players):
         for player in players:
             player_team = player['team']
@@ -207,7 +219,6 @@ class Statistician:
         game_id = self.data_clerk.insert_into_db('games', game_entry)
         if game_id:
             self.game.set_game_id(game_id)
-            self.data_clerk.print_insert_count(1, 'games')  
     
     def create_performance_record(self, player_id, gamelog_id, player_position_id):
         performance_entry = {
@@ -232,6 +243,23 @@ class Statistician:
             if player_gamelog_id in self.roster_map[team]['gamelog_ids']:
                 return self.roster_map[team]['team_number']
 
+    def get_stats(self):
+        stats = {
+            'box_score': self.get_box_score(),
+            'team_stats': self.get_team_stats(),
+            'pbp': self.get_pbp()
+        }
+        return stats
+
+    def get_pbp(self):
+        select_query_args = {
+            'SELECT': ['*'],
+            "FROM": 'plays',
+            "WHERE": f"game_id = {self.game.get_game_id()}",
+            "ORDER BY": self.pbp_order_by
+        }
+        return self.data_clerk.select(select_query_args)
+
     def process_play_by_play(self, pbp):
         for play in pbp:
             self.process_play(play)
@@ -239,9 +267,4 @@ class Statistician:
     # Implement this method in any children classes that inherit this class
     def process_play(self, play):
         raise Exception ("Not Implemented")
-
-    def finalize_data(self, query_data):
-        final_data = self.game.end_game()
-        for key, value in query_data.items():
-            final_data[key] = value
-        return final_data
+    

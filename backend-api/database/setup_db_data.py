@@ -103,7 +103,18 @@ child_tables_configs = {
         "FOREIGN KEY": "(gamelog_id) REFERENCES basketball_gamelogs(id) ON DELETE CASCADE",
         "FOREIGN KEY": "(player_position_id) REFERENCES player_positions(id) ON DELETE CASCADE",
         "PRIMARY KEY": "(game_id, player_id)"
-    }
+    },
+    'plays': {
+        "id": "INT AUTO_INCREMENT PRIMARY KEY",
+        "game_id": "INT NOT NULL",
+        "team_name": "VARCHAR(100)",
+        "period": "INT NOT NULL",
+        "minute": "INT NOT NULL",
+        "second": "INT NOT NULL",
+        "score": "VARCHAR(100) NOT NULL",
+        "play_string": "VARCHAR(100) NOT NULL",
+        "FOREIGN KEY": "(game_id) REFERENCES games(id) ON DELETE CASCADE"
+    },
 }
 
 table_configs_map = {**parent_tables_configs, **child_tables_configs}

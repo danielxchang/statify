@@ -1,7 +1,6 @@
 class Game:
     def __init__(self):
         self.__teams = []
-        self.__play_by_play = []
         self.__current_lineups = {}
 
     def start_game(self, teams, n_periods, period_length):
@@ -10,16 +9,6 @@ class Game:
         self.__period_length = period_length
         for team in teams:
             self.__teams.append(team)
-    
-    def add_play(self, period, time, team, play_string, latest_score):
-        play = {
-            "score": latest_score,
-            "period": period,
-            "time": time,
-            "team": team,
-            "description": play_string
-        }
-        self.__play_by_play.append(play)
 
     def connect_lineup(self, team, new_lineup):
         self.__current_lineups[team] = new_lineup
@@ -53,14 +42,3 @@ class Game:
 
     def get_game_id(self):
         return self.game_id
-
-    def get_pbp(self):
-        return self.__play_by_play
-
-    def end_game(self):
-        final_pbp = self.get_pbp()
-        final_result = {
-            'final_score': final_pbp[-1]['score'],
-            'pbp': final_pbp
-        }
-        return final_result

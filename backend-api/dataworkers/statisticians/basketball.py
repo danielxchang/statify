@@ -26,6 +26,7 @@ class BasketballStatistician(Statistician):
         2: 'two_point',
         3: 'three_point'
     }
+    pbp_order_by = ["period", "minute DESC", "second DESC"]
     
     def __init__(self, sport):
         super().__init__(sport)
@@ -50,7 +51,8 @@ class BasketballStatistician(Statistician):
             self.accumulate_minutes(play_map)
             stat_events = self.convert_to_stat(play_map)
             self.tally_stats(stat_events)
-            self.game.add_play(play_map['quarter'], f"{play_map['minute']}:{play_map['second']}", play_map['team'], play_map['play_string'], self.get_current_score())
+            self.add_play_to_db(play_map)
+            # self.game.add_play(play_map['quarter'], f"{play_map['minute']}:{play_map['second']}", play_map['team'], play_map['play_string'], self.get_current_score())
 
     def accumulate_minutes(self, play_map):
         curr_play_time = (play_map['quarter'], play_map['minute'], play_map['second'])
