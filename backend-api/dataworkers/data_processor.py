@@ -2,8 +2,9 @@ from dataworkers.extensionparsers.csv_parser import CsvParser
 from dataworkers.statisticians.basketball import BasketballStatistician
 
 class DataProcessor:
-    def __init__(self, sport = "basketball", file_type = 'csv'):
-        self.__file_parser = self.__instantiate_file_parser(file_type)
+    def __init__(self, sport = "basketball", file_type = None):
+        if file_type:
+            self.__file_parser = self.__instantiate_file_parser(file_type)
         self.__statistician = self.____instantiate_statistician(sport)
 
     def __instantiate_file_parser(self, file_type):
@@ -19,7 +20,21 @@ class DataProcessor:
         self.__statistician.receive_data(data)
 
     def translate_data(self):
-        return self.__statistician.process_data()
+        stat_data = self.__statistician.process_data()
+        return self.check_data_validity(stat_data)
+    
+    def retrieve_data(self, game_id):
+        stat_data = self.__statistician.get_game_data(game_id)
+        return self.check_data_validity(stat_data)
+
+    def get_all_games(self):
+        return self.__statistician.get_all_game_recaps()
+
+    def check_data_validity(self, data):
+        for category in ['box_score', 'team_stats', 'pbp', 'teams']:
+            if category not in data or not data[category]:
+                return False
+        return data
 
 def read_test_data(data):
     for key, data_list in data.items():

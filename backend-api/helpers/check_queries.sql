@@ -51,10 +51,11 @@ JOIN users
 */
 
 -- Box Score Query: Individual Players
+/*
 SELECT 
     team_name AS team,
     CONCAT(users.first_name, ' ', users.last_name, ' ', position) AS player, 
-    ROUND((minutes_played * 60 + seconds_played) / 60, 0) AS MIN,
+    CAST(ROUND((minutes_played * 60 + seconds_played) / 60, 0) AS SIGNED) AS MIN,
     CONCAT(two_point_makes + three_point_makes, '-', two_point_attempts + three_point_attempts) AS FG,
     CONCAT(three_point_makes, '-', three_point_attempts) AS 3PT,
     CONCAT(free_throw_makes, '-', free_throw_attempts) AS FT,
@@ -81,8 +82,10 @@ JOIN positions
 JOIN teams
     ON players.team_id = teams.id
 ORDER BY team_id;
+*/
 
 -- Box Score Query: Team
+/*
 SELECT 
     team_name AS team,
     CONCAT(
@@ -126,3 +129,28 @@ JOIN positions
 JOIN teams
     ON players.team_id = teams.id
 GROUP BY team_id;
+*/
+
+-- Get Game Data for existing game_id
+/*
+SELECT team_name, team_id, gamelog_id
+FROM performances
+JOIN players
+    ON performances.player_id = players.id
+JOIN teams
+    ON teams.id = players.team_id
+WHERE game_id = 1;
+*/
+
+-- Get all games with team names displayed
+/*
+SELECT
+    games.id AS game_id,
+    date_played,
+    (SELECT team_name FROM teams WHERE teams.id = team1_id) AS team1_name,
+    (SELECT team_name FROM teams WHERE teams.id = team2_id) AS team2_name,
+    team1_score,
+    team2_score
+FROM games
+GROUP BY game_id;
+*/
