@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request, Response
-from pprint import pprint
 
-from helpers.constants import UPLOAD_FOLDER, BASKETBALL_TEMPLATE_URL
+from helpers.constants import UPLOAD_FOLDER, TEMPLATES
 from dataworkers.data_processor import DataProcessor
 from fileworkers.file_handler import FileHandler
 
@@ -11,7 +10,25 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 file_handler = FileHandler(app.config['UPLOAD_FOLDER'])
 
-@app.route('/play-by-play/<sport>/<extension>', methods=['POST'])
+def jsonify_data(data, is_recap = False):
+    if data:
+        if not is_recap:
+            return jsonify(
+                message = 'Success!',
+                box_score = data['box_score'],
+                team_stats = data['team_stats'],
+                pbp = data['pbp'],
+                teams = data['teams'],
+            )
+        else:
+            return jsonify(
+                message = 'Success!',
+                games = data
+            )
+    else:
+        return Response(status = 400)
+
+@app.route('/<sport>/play-by-play/<extension>', methods=['POST'])
 def post_data(sport, extension):
     uploaded_paths = file_handler.validate_input_files(request.files, sport, extension)
     if not uploaded_paths:
@@ -21,19 +38,23 @@ def post_data(sport, extension):
     data_processor.read_data(uploaded_paths)
     file_handler.finished_reading_files(uploaded_paths.values())
     processed_data = data_processor.translate_data()
-    pprint(processed_data)
-    return jsonify(message = 'Success!')
+    return jsonify_data(processed_data)
 
-@app.route('/game/<game_id>')
-def get_game(game_id):
-    # Retrieve data from MySQL database
-    return jsonify(game_id = game_id)
+@app.route('/<sport>/game/<game_id>')
+def get_game(sport, game_id):
+    data_processor = DataProcessor(sport)
+    processed_data = data_processor.retrieve_data(game_id)
+    return jsonify_data(processed_data)
 
-@app.route('/template/<sport>')
+@app.route('/<sport>/game/all')
+def get_all_games(sport):
+    data_processor = DataProcessor(sport)
+    game_recaps = data_processor.get_all_games()
+    return jsonify_data(game_recaps, True)
+
+@app.route('/<sport>/template')
 def get_template_link(sport):
-    if sport == 'basketball':
-        url = BASKETBALL_TEMPLATE_URL
-    return jsonify(template = url)
+    return jsonify(template = TEMPLATES[sport])
 
 if __name__ == "__main__":
     app.run(debug=True)
