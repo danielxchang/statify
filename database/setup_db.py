@@ -41,3 +41,12 @@ def get_db_map(sport):
     }
 
     return db_name, table_columns_map
+
+def run_db_checks():
+    show_tables()
+    select_query({
+        'SELECT': ['*'],
+        'FROM': 'games'
+    })
+    last_result = get_last_query()
+    pprint(last_result)
