@@ -70,4 +70,4 @@ def get_template_link(sport):
     return jsonify(template = TEMPLATES[sport])
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

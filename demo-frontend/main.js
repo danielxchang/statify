@@ -8,6 +8,7 @@ let sport = "basketball";
 const DEFAULT_URL =
   "https://docs.google.com/spreadsheets/d/1lePLaeywOD97irRoD7qWcE3GHFMYimTPX1g77Vj-Yz8/edit?usp=sharing";
 const STATIFY_URL = "http://127.0.0.1:5000";
+// const STATIFY_URL = "https://statify-sports-api.herokuapp.com";
 const CATEGORIES = [
   {
     name: "Box Score",
