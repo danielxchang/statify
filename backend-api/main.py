@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request, Response
+from flask_cors import CORS
 
 from helpers.constants import UPLOAD_FOLDER, TEMPLATES
 from dataworkers.data_processor import DataProcessor
 from fileworkers.file_handler import FileHandler
 
 app = Flask(__name__)
+CORS(app, resources=r'/api/*')
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -28,8 +30,9 @@ def jsonify_data(data, is_recap = False):
     else:
         return Response(status = 400)
 
-@app.route('/<sport>/play-by-play/<extension>', methods=['POST'])
+@app.route('/api/<sport>/play-by-play/<extension>', methods=['POST'])
 def post_data(sport, extension):
+    print(request.files)
     uploaded_paths = file_handler.validate_input_files(request.files, sport, extension)
     if not uploaded_paths:
         return Response(status = 400)
@@ -40,19 +43,19 @@ def post_data(sport, extension):
     processed_data = data_processor.translate_data()
     return jsonify_data(processed_data)
 
-@app.route('/<sport>/game/<game_id>')
+@app.route('/api/<sport>/game/<game_id>')
 def get_game(sport, game_id):
     data_processor = DataProcessor(sport)
     processed_data = data_processor.retrieve_data(game_id)
     return jsonify_data(processed_data)
 
-@app.route('/<sport>/game/all')
+@app.route('/api/<sport>/game/all')
 def get_all_games(sport):
     data_processor = DataProcessor(sport)
     game_recaps = data_processor.get_all_games()
     return jsonify_data(game_recaps, True)
 
-@app.route('/<sport>/template')
+@app.route('/api/<sport>/template')
 def get_template_link(sport):
     return jsonify(template = TEMPLATES[sport])
 

@@ -10,7 +10,13 @@ def get_join_args(gamelog_table):
 def get_select_args(sport, table_type):
     return select_args[sport][table_type]
 
-pbp_select_columns = ['team_name', 'period', 'minute', 'second', 'score', 'play_string']
+pbp_select_columns = [
+    'period', 
+    'CONCAT(minute, ":", second)',
+    'team_name', 
+    'play_string', 
+    'score'
+]
 
 basketball_select_args = {
     'BOX_SCORE': [
@@ -30,6 +36,7 @@ basketball_select_args = {
         "points AS PTS"
     ],
     'TEAM_STATS': [
+        "CAST(SUM(points) AS SIGNED) AS PTS",
         "CONCAT(SUM(two_point_makes + three_point_makes), '-', SUM(two_point_attempts + three_point_attempts)) AS FG",
         "ROUND(IFNULL(SUM(two_point_makes + three_point_makes) / SUM(two_point_attempts + three_point_attempts) * 100, 0), 1) AS 'Field Goal %'",
         "CONCAT(SUM(three_point_makes), '-', SUM(three_point_attempts)) AS 3PT",
@@ -43,8 +50,7 @@ basketball_select_args = {
         "CAST(SUM(steals) AS SIGNED) AS STL",
         "CAST(SUM(blocks) AS SIGNED) AS BLK",
         "CAST(SUM(turnovers) AS SIGNED) AS 'TO'",
-        "CAST(SUM(fouls) AS SIGNED) as PF",
-        "CAST(SUM(points) AS SIGNED) AS PTS"
+        "CAST(SUM(fouls) AS SIGNED) as PF"
     ]
 }
 

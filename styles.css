@@ -2,6 +2,7 @@
   background-color: #fbfbfb;
 }
 
-#logo {
+#logo,
+a {
   color: #00b779;
 }
