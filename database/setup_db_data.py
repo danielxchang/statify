@@ -1,4 +1,9 @@
-db_name = 'statify'
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+db_name = os.environ.get('MYSQL_DB')
 constraint_keywords = ['FOREIGN KEY', 'PRIMARY KEY', 'UNIQUE']
 
 '''
