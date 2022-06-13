@@ -12,7 +12,7 @@ def get_select_args(sport, table_type):
 
 pbp_select_columns = [
     'period', 
-    'CONCAT(minute, ":", LPAD(second, 2, "0"))',
+    'CONCAT(minute, ":", LPAD(second, 2, "0")) AS time',
     'team_name', 
     'play_string', 
     'score'
@@ -37,11 +37,11 @@ basketball_select_args = {
     ],
     'TEAM_STATS': [
         "CAST(SUM(points) AS SIGNED) AS PTS",
-        "CONCAT(SUM(two_point_makes + three_point_makes), '-', SUM(two_point_attempts + three_point_attempts)) AS FG",
+        "CAST(CONCAT(SUM(two_point_makes + three_point_makes), '-', SUM(two_point_attempts + three_point_attempts)) AS CHAR) AS FG",
         "CONCAT(ROUND(IFNULL(SUM(two_point_makes + three_point_makes) / SUM(two_point_attempts + three_point_attempts) * 100, 0), 1), '%') AS 'Field Goal %'",
-        "CONCAT(SUM(three_point_makes), '-', SUM(three_point_attempts)) AS 3PT",
+        "CAST(CONCAT(SUM(three_point_makes), '-', SUM(three_point_attempts)) AS CHAR) AS 3PT",
         "CONCAT(ROUND(IFNULL(SUM(three_point_makes) / SUM(three_point_attempts) * 100, 0), 1), '%') AS 'Three Point %'",
-        "CONCAT(SUM(free_throw_makes),'-', SUM(free_throw_attempts)) AS FT",
+        "CAST(CONCAT(SUM(free_throw_makes),'-', SUM(free_throw_attempts)) AS CHAR) AS FT",
         "CONCAT(ROUND(IFNULL(SUM(free_throw_makes) / SUM(free_throw_attempts) * 100, 0), 1), '%') AS 'Free Throw %'",
         "CAST(SUM(offensive_rebounds) AS SIGNED) AS OREB",
         "CAST(SUM(defensive_rebounds) AS SIGNED) AS DREB",
