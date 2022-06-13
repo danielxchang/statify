@@ -77,39 +77,39 @@
     <!-- Template for the records -->
     <script id="records-template" type="text/x-handlebars-template">
       <h3 style="text-align: center;">{{title}}</h3>
-      {{#each recordsList as |recordList|}}
-      <table class="table table-striped">
-        <h4>{{ recordList.listLabel }}</h4>
-        <thead>
-          <tr>
-            {{#each recordList.headings as |heading|}}
-              <th scope="col">{{heading}}</th>
-            {{/each}}
-          </tr>
-        </thead>
-        <tbody>
-          {{#each recordList.records as |record|}}
-            <tr data-gameid={{getId record}}>
-              <th>
-                {{#if recordList.isGames }}
-                <a href="#" onclick="selectGame('{{getId record}}')">{{getId record}}</a>
-                {{else}}
-                <a href="#" style="text-decoration: none;">{{getId record}}</a>
-                {{/if}}
-              </th>
-              {{#each (getNonIdValues record)}}
-                <td style="text-align: {{recordList.align}};">{{this}}</td>
+      {{#each recordLists as |recordList|}}
+        <table class="table table-striped">
+          <h4>{{recordList.listLabel}}</h4>
+          <thead>
+            <tr>
+              {{#each recordList.headings as |heading|}}
+                <th scope="col">{{heading}}</th>
               {{/each}}
             </tr>
-          {{/each}}
-          {{#unless foundRecords}}
-            <tr>
-              <td class="p-5 text-center text-muted" colspan="100%">{{errorMessage}}</p>
-            </tr>
-          {{/unless}}
+          </thead>
+          <tbody>
+            {{#each recordList.records as |record|}}
+              <tr data-gameid={{getId record}}>
+                <th>
+                  {{#if recordList.isGames}}
+                    <a href="#" onclick="selectGame('{{getId record}}')">{{getId
+                        record
+                      }}</a>
+                  {{else}}
+                    <a
+                      href="#"
+                      style="text-decoration: none; pointer-events: none;"
+                    >{{getId record}}</a>
+                  {{/if}}
+                </th>
+                {{#each (getNonIdValues record)}}
+                  <td style="text-align: {{recordList.align}};">{{this}}</td>
+                {{/each}}
+              </tr>
+            {{/each}}
           </tbody>
         </table>
-        {{/each}}
+      {{/each}}
     </script>
   </head>
   <body class="bg-light">
@@ -141,8 +141,16 @@
             method="POST"
             action="http://127.0.0.1:5000/api/basketball/play-by-play/csv"
             enctype="multipart/form-data"
+            target="_blank"
           >
             <div class="modal-body">
+              <h6>Instructions</h6>
+              <ol>
+                <li>Click "Go To Template"</li>
+                <li>Create copy of Google Doc and populate with game data</li>
+                <li>Save roster and play-by-play tabs as CSVs</li>
+                <li>Upload and Submit</li>
+              </ol>
               <div class="form-group">
                 <div class="custom-file">
                   <input
@@ -186,16 +194,15 @@
               >
                 Go To Template
               </a>
-              <a href="/">
-                <button
-                  type="submit"
-                  class="btn btn-success"
-                  id="submit-game-btn"
-                  disabled
-                >
-                  Submit
-                </button>
-              </a>
+              <button
+                type="submit"
+                class="btn btn-success"
+                id="submit-game-btn"
+                disabled
+                data-dismiss
+              >
+                Submit
+              </button>
             </div>
           </form>
         </div>
@@ -232,14 +239,18 @@
       });
 
       function openTemplate() {
-        fetch(`${statifyUrl}/api/${sport}/template`)
+        fetch(`${STATIFY_URL}/api/${sport}/template`, {
+          method: "get",
+          mode: "cors",
+        })
           .then((response) => response.json())
           .then((data) => {
-            const { templateUrl } = data;
-            window.open(url);
+            const { template } = data;
+            window.open(template);
           })
           .catch((err) => {
-            window.open(defaultUrl);
+            console.log("DEFAULT URL");
+            window.open(DEFAULT_URL);
             return;
           });
       }
