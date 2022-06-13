@@ -43,8 +43,10 @@ def commit_changes():
 def close_db():
     connected_db.close()
 
-def execute_query(query, commit_change = False):
+def execute_query(query, need_use_db = True, commit_change = False):
     try:
+        if need_use_db:
+            use_database(os.environ.get('MYSQL_DB'))
         cursor.execute(query)
         if commit_change:
             commit_changes()
@@ -54,18 +56,18 @@ def execute_query(query, commit_change = False):
 
 # Database Functions
 def show_databases():
-    result = execute_query("SHOW DATABASES")
+    result = execute_query("SHOW DATABASES", False)
     pprint(get_last_query())
     return result
 
 def create_database(database_name):
-    return execute_query(f"CREATE DATABASE {database_name}")
+    return execute_query(f"CREATE DATABASE {database_name}", False)
 
 def use_database(database_name):
-    return execute_query(f"USE {database_name}")
+    return execute_query(f"USE {database_name}", False)
 
 def drop_database(database_name):
-    return execute_query(f"DROP DATABASE IF EXISTS {database_name}")
+    return execute_query(f"DROP DATABASE IF EXISTS {database_name}", False)
 
 # Table Functions
 def show_tables():
