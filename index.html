@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Statify</title>
-
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <!-- External libraries -->
     <link
       rel="stylesheet"
@@ -33,7 +33,7 @@
           id="logo"
           class="navbar-brand"
           href="#"
-          onclick="showAllProducts();"
+          onclick="loadGames();"
         >Statify</a>
         <button
           class="navbar-toggler"
@@ -53,74 +53,196 @@
                 <a
                   class="nav-link"
                   href="#"
-                  onclick="showCategory('{{category.name}}');"
+                  onclick="showCategory('{{category.name}}', '{{category.recordType}}');"
                 >{{category.name}}</a>
               </li>
             {{/each}}
           </ul>
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <a
-                href="mailto:phill@sheety.co?subject=Submit Product"
-                class="btn btn-outline-primary"
-              >Submit Game</a>
+              <button
+                type="button"
+                class="btn btn-success"
+                data-toggle="modal"
+                data-target="#exampleModalCenter"
+              >
+                Submit Game
+              </button>
             </li>
           </ul>
         </div>
       </nav>
     </script>
 
-    <!-- Template for the products -->
-    <script id="products-template" type="text/x-handlebars-template">
-      <h3>{{title}}</h3>
-      <div class="shadow-sm bg-white rounded-lg">
-      	{{#each this.products as |product|}}
-      		<div class="media border-bottom p-3" id="product-{{product.id}}">
-      			<img src="{{product.iconUrl}}" width="50" class="mr-3">
-      			<div class="media-body">
-      				<h6 class="m-0">
-      					<a href="{{product.website}}" target="_blank">{{product.name}}</a>
-      				</h6>
-      				<p class="m-0">{{product.shortDescription}}</p>
-      				<p class="m-0 text-muted"><small>{{product.category}}</small></p>
-      			</div>
-      			<button class="btn btn-outline-primary" onclick="upvoteProduct({{product.id}});" {{#if product.hasVoted}}disabled{{/if}}>
-      				&#x21e7; {{product.votes}}
-      			</button>
-      		</div>
-      	{{/each}}
-      	{{#unless this.products}}
-      		<p class="p-5 text-center text-muted">No products found</p>
-      	{{/unless}}
-      </div>
+    <!-- Template for the records -->
+    <script id="records-template" type="text/x-handlebars-template">
+      <h3 style="text-align: center;">{{title}}</h3>
+      {{#each recordsList as |recordList|}}
+      <table class="table table-striped">
+        <h4>{{ recordList.listLabel }}</h4>
+        <thead>
+          <tr>
+            {{#each recordList.headings as |heading|}}
+              <th scope="col">{{heading}}</th>
+            {{/each}}
+          </tr>
+        </thead>
+        <tbody>
+          {{#each recordList.records as |record|}}
+            <tr data-gameid={{getId record}}>
+              <th>
+                {{#if recordList.isGames }}
+                <a href="#" onclick="selectGame('{{getId record}}')">{{getId record}}</a>
+                {{else}}
+                <a href="#" style="text-decoration: none;">{{getId record}}</a>
+                {{/if}}
+              </th>
+              {{#each (getNonIdValues record)}}
+                <td style="text-align: {{recordList.align}};">{{this}}</td>
+              {{/each}}
+            </tr>
+          {{/each}}
+          {{#unless foundRecords}}
+            <tr>
+              <td class="p-5 text-center text-muted" colspan="100%">{{errorMessage}}</p>
+            </tr>
+          {{/unless}}
+          </tbody>
+        </table>
+        {{/each}}
     </script>
   </head>
   <body class="bg-light">
-    <div id="menu-container"></div>
-    <form
-      method="POST"
-      action="http://127.0.0.1:5000/play-by-play/basketball"
-      enctype="multipart/form-data"
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModalCenter"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalCenterTitle"
+      aria-hidden="true"
     >
-      <label>Upload Roster CSV</label>
-
-      <p><input type="file" name="roster-file" accept=".csv" /></p>
-      <label>Upload Play-by-Play CSV</label>
-      <p><input type="file" name="pbp-file" accept=".csv" /></p>
-
-      <p><input type="submit" value="Submit" /></p>
-    </form>
-    <div class="container" id="products-container">
-      <!-- Loading indicator: this gets replaced when we have products -->
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">
+              Submit New Game
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form
+            method="POST"
+            action="http://127.0.0.1:5000/api/basketball/play-by-play/csv"
+            enctype="multipart/form-data"
+          >
+            <div class="modal-body">
+              <div class="form-group">
+                <div class="custom-file">
+                  <input
+                    type="file"
+                    class="custom-file-input"
+                    id="roster-file"
+                    name="roster"
+                    accept=".csv"
+                  />
+                  <label
+                    class="custom-file-label"
+                    id="roster-file-label"
+                    for="roster-file"
+                    >Upload Roster CSV</label
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="custom-file">
+                  <input
+                    type="file"
+                    class="custom-file-input"
+                    id="pbp-file"
+                    name="pbp"
+                    accept=".csv"
+                  />
+                  <label
+                    class="custom-file-label"
+                    id="pbp-file-label"
+                    for="pbp-file"
+                    >Upload Play-by-Play CSV</label
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <a
+                class="btn btn-light"
+                id="template-btn"
+                onclick="openTemplate()"
+              >
+                Go To Template
+              </a>
+              <a href="/">
+                <button
+                  type="submit"
+                  class="btn btn-success"
+                  id="submit-game-btn"
+                  disabled
+                >
+                  Submit
+                </button>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="menu-container"></div>
+    <div class="container" id="records-container">
+      <!-- Loading indicator: this gets replaced when we have games -->
       <div class="text-center p-5 m-5">
-        <div class="text-muted p-2">Loading products...</div>
+        <div class="text-muted p-2">Loading games...</div>
         <div class="spinner-border text-primary" role="status"></div>
       </div>
     </div>
     <div class="container" id="footer">
       <div class="text-muted text-center p-3">
-        Powered by <a href="https://sheety.co">Sheety</a>
+        Powered by
+        <a href="https://github.com/dcphantom/statify">Statify API</a>
       </div>
     </div>
+    <script>
+      const submitBtnEl = document.getElementById("submit-game-btn");
+      const fileInputIds = ["roster-file", "pbp-file"];
+      const fileInputEls = [];
+      fileInputIds.forEach((inputId) => {
+        inputEl = document.getElementById(inputId);
+        fileInputEls.push(inputEl);
+        inputEl.onchange = function () {
+          fileName = this.files[0].name;
+          document.getElementById(`${inputId}-label`).textContent = fileName;
+          submitBtnEl.disabled = !fileInputEls.every(
+            (el) => el.files.length > 0
+          );
+        };
+      });
+
+      function openTemplate() {
+        fetch(`${statifyUrl}/api/${sport}/template`)
+          .then((response) => response.json())
+          .then((data) => {
+            const { templateUrl } = data;
+            window.open(url);
+          })
+          .catch((err) => {
+            window.open(defaultUrl);
+            return;
+          });
+      }
+    </script>
   </body>
 </html>
