@@ -1,14 +1,18 @@
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS, cross_origin
+from dotenv import load_dotenv
+import os
 
-from helpers.constants import UPLOAD_FOLDER, TEMPLATES
+from helpers.constants import TEMPLATES
 from dataworkers.data_processor import DataProcessor
 from fileworkers.file_handler import FileHandler
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = os.environ.get("UPLOAD_FOLDER")
 
 file_handler = FileHandler(app.config['UPLOAD_FOLDER'])
 
