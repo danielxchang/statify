@@ -11,13 +11,14 @@ def execute_custom_query(query):
 
 # Utility Functions
 def connect_to_db():
-    mydb = mysql.connector.connect(
+    global connected_db, cursor
+    connected_db = mysql.connector.connect(
     host=os.environ.get('MYSQL_HOST'),
     user=os.environ.get('MYSQL_USER'),
     password=os.environ.get('MYSQL_PASSWORD'),
     database=os.environ.get('MYSQL_DB')
     )
-    return mydb
+    cursor = connected_db.cursor()
 
 def get_last_query():
     query_data = {
@@ -150,5 +151,6 @@ def having(group_condition):
 def limit(arguments):
     return f"LIMIT {arguments['offset'] if 'offset' in arguments else 0}, {arguments['count']}" 
 
-connected_db = connect_to_db()
-cursor = connected_db.cursor()
+connected_db = None
+cursor = None
+connect_to_db()

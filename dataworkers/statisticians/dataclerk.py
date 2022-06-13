@@ -9,6 +9,7 @@ load_dotenv()
 class DataClerk:
     def __init__(self, sport):
         self.init_db_map(sport)
+        connect_to_db()
 
     def init_db_map(self, sport):
         self.db_name, self.db_columns = get_db_map(sport)
@@ -64,3 +65,6 @@ class DataClerk:
             'values_list': values
         }
         return self.query_database('INSERT_INTO', insert_args)
+
+    def close(self):
+        close_db()

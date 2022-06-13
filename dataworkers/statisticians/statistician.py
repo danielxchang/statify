@@ -283,7 +283,9 @@ class Statistician:
             "GROUP BY": ["game_id"],
             "ORDER BY": ["date_played DESC"]
         }
-        return self.data_clerk.query_database('SELECT', select_query_args)
+        data = self.data_clerk.query_database('SELECT', select_query_args)
+        self.data_clerk.close()
+        return data
 
     def get_current_score(self):
         select_query_args = {
@@ -306,6 +308,7 @@ class Statistician:
             'team_stats': self.get_team_stats(),
             'pbp': self.get_pbp()
         }
+        self.data_clerk.close()
         return stats
 
     def get_pbp(self):
@@ -315,7 +318,6 @@ class Statistician:
             "WHERE": f"game_id = {self.game.get_game_id()}"
         }
         pbp_data = self.data_clerk.select(select_query_args)
-        pprint(pbp_data)
         return {
             'headings': list(pbp_data['headings']),
             'plays': [list(record) for record in pbp_data['records']]
@@ -342,6 +344,4 @@ class Statistician:
                 stat_table['headings'] = stat_table_data['headings']
                 added_headings = True
             stat_table[team_name] = stat_table_data['records']
-        
-        pprint(stat_table)
         return stat_table
