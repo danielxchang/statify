@@ -139,7 +139,7 @@
           </div>
           <form
             method="POST"
-            action="http://127.0.0.1:5000/api/basketball/play-by-play/csv"
+            action="https://statify-sports-api.herokuapp.com/api/basketball/play-by-play/csv"
             enctype="multipart/form-data"
             target="_blank"
           >
@@ -246,6 +246,7 @@
           .then((response) => response.json())
           .then((data) => {
             const { template } = data;
+            console.log("TEMPLATE FROM API");
             window.open(template);
           })
           .catch((err) => {

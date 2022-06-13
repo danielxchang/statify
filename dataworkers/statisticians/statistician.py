@@ -315,6 +315,7 @@ class Statistician:
             "WHERE": f"game_id = {self.game.get_game_id()}"
         }
         pbp_data = self.data_clerk.select(select_query_args)
+        pprint(pbp_data)
         return {
             'headings': list(pbp_data['headings']),
             'plays': [list(record) for record in pbp_data['records']]
@@ -341,4 +342,6 @@ class Statistician:
                 stat_table['headings'] = stat_table_data['headings']
                 added_headings = True
             stat_table[team_name] = stat_table_data['records']
+        
+        pprint(stat_table)
         return stat_table
