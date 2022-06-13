@@ -9,6 +9,7 @@ class DataClerk:
         self.db_name, self.db_columns = get_db_map(sport)
 
     def query_database(self, query_type, query_args):
+        use_database('statify')
         if query_type == 'INSERT_INTO':
             return self.insert(query_args)
         if query_type == 'SELECT':
