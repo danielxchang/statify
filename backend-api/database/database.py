@@ -14,7 +14,8 @@ def connect_to_db():
     mydb = mysql.connector.connect(
     host=os.environ.get('MYSQL_HOST'),
     user=os.environ.get('MYSQL_USER'),
-    password=os.environ.get('MYSQL_PASSWORD')
+    password=os.environ.get('MYSQL_PASSWORD'),
+    database=os.environ.get('MYSQL_DB')
     )
     return mydb
 
@@ -52,14 +53,10 @@ def execute_query(query, commit_change = False):
     except mysql.connector.Error as err:
         return False, {"message": err, "query": query}
 
-def print_cursor():
-    for x in cursor:
-        print(x)
-
 # Database Functions
 def show_databases():
     result = execute_query("SHOW DATABASES")
-    print_cursor()
+    pprint(get_last_query())
     return result
 
 def create_database(database_name):
@@ -74,7 +71,7 @@ def drop_database(database_name):
 # Table Functions
 def show_tables():
     result = execute_query("SHOW TABLES")
-    print_cursor()
+    pprint(get_last_query())
     return result
 
 def create_table(table_name, columns_config):

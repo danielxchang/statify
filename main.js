@@ -5,20 +5,9 @@ let categories = null;
 let title = null;
 let sport = "basketball";
 
-const defaultUrl =
+const DEFAULT_URL =
   "https://docs.google.com/spreadsheets/d/1lePLaeywOD97irRoD7qWcE3GHFMYimTPX1g77Vj-Yz8/edit?usp=sharing";
-const statifyUrl = "http://127.0.0.1:5000";
-const DUMMY_PRODUCTS = [
-  {
-    name: "Sheety",
-    shortDescription: "Turn any Google Sheet into an API",
-    website: "https://www.sheety.co",
-    votes: 100,
-    iconUrl: "https://sheety.co/icon.png",
-    category: "Web",
-    id: 2,
-  },
-];
+const STATIFY_URL = "http://127.0.0.1:5000";
 const CATEGORIES = [
   {
     name: "Box Score",
@@ -66,11 +55,11 @@ const CATEGORY_HEADINGS = {
   team_stats: [
     "PTS",
     "FG",
-    "Field Goal %",
+    "FG %",
     "3PT",
-    "Three Point %",
+    "3PT %",
     "FT",
-    "Free Throw %",
+    "FT %",
     "OREB",
     "DREB",
     "REB",
@@ -96,8 +85,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 function loadGames() {
   selectedGameId = null;
+  this.title = null;
   loadCategories();
-  fetch(statifyUrl + "/api/basketball/game/all")
+  fetch(STATIFY_URL + "/api/basketball/game/all", {
+    method: "get",
+    mode: "cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       const { records } = data["games"];
@@ -114,22 +107,19 @@ function loadCategories() {
   drawCategories();
 }
 
-function drawRecords(recordsList, record_type) {
+function drawRecords(recordLists, record_type) {
   headings = CATEGORY_HEADINGS[record_type];
-  recordsList = recordsList.map((recordsListObj) => {
-    recordsListObj.headings = headings;
-    return recordsListObj;
+  recordLists = recordLists.map((recordListsObj) => {
+    recordListsObj.headings = headings;
+    return recordListsObj;
   });
   const template = Handlebars.compile(
     document.getElementById("records-template").innerHTML
   );
-  const foundRecords = !recordsList[0].records;
   document.getElementById("records-container").innerHTML = template({
     title: this.title,
     headings: headings,
-    recordsList: recordsList,
-    foundRecords: foundRecords,
-    errorMessage: "No records found",
+    recordLists: recordLists,
   });
 }
 
@@ -178,7 +168,10 @@ function selectGame(gameId) {
 function getGame(gameId) {
   if (gameId === selectedGameId) return;
 
-  fetch(statifyUrl + "/api/basketball/game/" + gameId)
+  fetch(STATIFY_URL + "/api/basketball/game/" + gameId, {
+    method: "get",
+    mode: "cors",
+  })
     .then((response) => response.json())
     .then((data) => {
       selectGameData = data;

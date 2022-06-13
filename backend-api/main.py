@@ -1,12 +1,12 @@
 from flask import Flask, jsonify, request, Response
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 from helpers.constants import UPLOAD_FOLDER, TEMPLATES
 from dataworkers.data_processor import DataProcessor
 from fileworkers.file_handler import FileHandler
 
 app = Flask(__name__)
-CORS(app, resources=r'/api/*')
+CORS(app)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -31,6 +31,7 @@ def jsonify_data(data, is_recap = False):
         return Response(status = 400)
 
 @app.route('/api/<sport>/play-by-play/<extension>', methods=['POST'])
+@cross_origin()
 def post_data(sport, extension):
     print(request.files)
     uploaded_paths = file_handler.validate_input_files(request.files, sport, extension)
@@ -44,18 +45,21 @@ def post_data(sport, extension):
     return jsonify_data(processed_data)
 
 @app.route('/api/<sport>/game/<game_id>')
+@cross_origin()
 def get_game(sport, game_id):
     data_processor = DataProcessor(sport)
     processed_data = data_processor.retrieve_data(game_id)
     return jsonify_data(processed_data)
 
 @app.route('/api/<sport>/game/all')
+@cross_origin()
 def get_all_games(sport):
     data_processor = DataProcessor(sport)
     game_recaps = data_processor.get_all_games()
     return jsonify_data(game_recaps, True)
 
 @app.route('/api/<sport>/template')
+@cross_origin()
 def get_template_link(sport):
     return jsonify(template = TEMPLATES[sport])
 
