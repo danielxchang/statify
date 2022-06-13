@@ -45,8 +45,10 @@ def post_data(sport, extension):
     data_processor = DataProcessor(sport, 'csv')
     data_processor.read_data(uploaded_paths)
     file_handler.finished_reading_files(uploaded_paths.values())
-    processed_data = data_processor.translate_data()
-    return jsonify_data(processed_data)
+    if not data_processor.translate_data():
+        return Response(status = 400)
+    else:
+        return jsonify(message='POSTED!')
 
 @app.route('/api/<sport>/game/<game_id>')
 @cross_origin()
