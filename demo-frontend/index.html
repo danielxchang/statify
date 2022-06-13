@@ -92,9 +92,10 @@
               <tr data-gameid={{getId record}}>
                 <th>
                   {{#if recordList.isGames}}
-                    <a href="#" onclick="selectGame('{{getId record}}')">{{getId
-                        record
-                      }}</a>
+                    <a
+                      href="#"
+                      onclick="selectGame('{{getId record}}')"
+                    >GAME</a>
                   {{else}}
                     <a
                       href="#"
@@ -137,15 +138,9 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <!-- <form
-            method="POST"
-             action="https://statify-sports-api.herokuapp.com/api/basketball/play-by-play/csv"
-            enctype="multipart/form-data"
-            target="_blank"
-          > -->
           <form
             method="POST"
-            action="http://127.0.0.1:5000/api/basketball/play-by-play/csv"
+            action="https://statify-sports-api.herokuapp.com/api/basketball/play-by-play/csv"
             enctype="multipart/form-data"
             target="_blank"
           >
